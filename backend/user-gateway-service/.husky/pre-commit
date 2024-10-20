@@ -1,0 +1,3 @@
+# service-template/.husky/pre-commit
+cd service-template
+npx lint-staged

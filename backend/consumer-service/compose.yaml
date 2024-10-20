@@ -1,0 +1,37 @@
+services:
+  server:
+    build:
+      context: .
+    container_name: example_service
+    restart: always
+    env_file:
+      - .env.docker
+    environment:
+      NODE_ENV: production
+      PORT: 80
+    ports:
+      - '${DOCKER_SERVICE_EXPOSE_PORT:-3000}:80'
+    networks:
+      - vani-heroes-network
+  db:
+    image: mysql:latest
+    container_name: example_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: example_db
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - '${DOCKER_DATABASE_EXPOSE_PORT:-3306}:3306'
+    networks:
+      - vani-heroes-network
+
+volumes:
+  db-data:
+networks:
+  vani-heroes-network:
+# secrets:
+#   db-password:
+#     file: db/password.txt
+

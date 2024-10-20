@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Scrape {
+  id         Int          @id @default(autoincrement())
+  url        String
+  webName    String       @map("web_name") @db.Char()
+  count      Int
+  urlMD5     String       @unique @map("url_md5")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime?    @updatedAt @map("updated_at")
+  Media      Media[]
+  UserScrape UserScrape[]
+
+  @@map("scrapes")
+}
+
+model UserScrape {
+  id Int @id @default(autoincrement())
+
+  userId Int @map("user_id")
+
+  scrape   Scrape @relation(fields: [scrapeId], references: [id])
+  scrapeId Int    @map("scrape_id")
+
+  @@map("user_scrapes")
+}
+
+model Media {
+  id       Int    @id @default(autoincrement())
+  mediaUrl String
+
+  hashUrl  String @db.Char()
+  type     String @db.Char()
+  scrape   Scrape @relation(fields: [scrapeId], references: [id])
+  scrapeId Int
+}

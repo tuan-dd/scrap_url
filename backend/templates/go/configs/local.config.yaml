@@ -1,0 +1,11 @@
+server:
+  port: 3000
+postgres:
+  host: "0.0.0.0"
+  post: 5444
+  username: "test"  
+  password: "test"
+  db: "test"
+  maxIdleConns: 10
+  maxOpenConns : 100
+  connMaxLifeTime: 3600
