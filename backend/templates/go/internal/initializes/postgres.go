@@ -1,0 +1,3 @@
+package initializes
+
+func InitPostgres() {}

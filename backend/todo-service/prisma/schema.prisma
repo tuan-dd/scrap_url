@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Todo {
+  id    Int    @id @default(autoincrement())
+  title String @db.VarChar()
+
+  createdBy Int       @map("created_by")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  status      StatusTodo   @default(PENDING)
+  todoUser    TodoUser[]
+  subTask     SubTask[]
+  description description?
+}
+
+enum StatusTodo {
+  PENDING
+  PROCESSING
+  DONE
+}
+
+model SubTask {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar()
+  content   String?
+  isDone    Boolean   @default(false) @map("is_done")
+  updatedBy Int?      @map("updated_by")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  todoId    Int       @map("todo_id")
+  todo      Todo      @relation(fields: [todoId], references: [id])
+
+  @@map("sub_tasks")
+}
+
+model description {
+  id      Int    @id @default(autoincrement())
+  content String
+  todoId  Int    @unique @map("todo_id")
+  todo    Todo   @relation(fields: [todoId], references: [id])
+
+  @@map("descriptions")
+}
+
+model TodoUser {
+  id     Int  @id @default(autoincrement())
+  userId Int  @map("user_id")
+  // isAuthor Boolean @default(false)
+  todoId Int  @map("todo_id")
+  todo   Todo @relation(fields: [todoId], references: [id])
+
+  @@unique([todoId, userId])
+  @@map("todo_user")
+}
